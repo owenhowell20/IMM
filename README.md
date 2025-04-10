@@ -21,7 +21,7 @@ To install IMM, use the following steps:
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-repository-link/se3-hyena.git
+git clone git@github.com:owenhowell20/IMM.git
 cd IMM
 
 # Install dependencies
