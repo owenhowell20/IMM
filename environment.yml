@@ -1,0 +1,9 @@
+name: IMM
+channels:
+  - pytorch
+  - defaults
+dependencies:
+  - python=3.10
+  - pytorch
+  - torchvision
+  - pandas
