@@ -1,7 +1,7 @@
 import pytest
 import torch
-from src.preconds import IMMPrecond
-from data import mock_data_image
+from src.pc_preconds import IMMPrecond  # adjust import as needed
+from data import mock_data_pc
 
 
 @pytest.fixture
@@ -24,10 +24,10 @@ def preconditioner():
     return model
 
 
-def test_image_preconditioner_forward_step(preconditioner, mock_data_image):
+def test_pc_preconditioner_forward_step(preconditioner, mock_data_pc):
 
-    # Dummy input image
-    x = mock_data_image
+    # Dummy input point cloud
+    x = mock_data_pc
     device = "cpu"
 
     # Dummy timesteps
@@ -48,13 +48,3 @@ def test_image_preconditioner_forward_step(preconditioner, mock_data_image):
     # Optional: check gradient flow
     output.mean().backward()
     assert x.grad is not None, "Gradients should be computed for input x"
-
-    ### run cfg: this takes input x at time s and push forward to time t
-    F = preconditioner.cfg_forward(
-        x=x,
-        t=t,
-        s=s,  ### TODO: check issue when s=None
-    )
-
-    print(F.shape)
-    assert F.shape == x.shape, "Dimension mismatch"

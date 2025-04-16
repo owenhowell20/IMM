@@ -1,31 +1,22 @@
-# Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
-#
-# This work is licensed under a Creative Commons
-# Attribution-NonCommercial-ShareAlike 4.0 International License.
-# You should have received a copy of the license along with this
-# work. If not, see http://creativecommons.org/licenses/by-nc-sa/4.0/
-
-"""Model architectures and preconditioning schemes used in the paper
-"Elucidating the Design Space of Diffusion-Based Generative Models"."""
+""" Defining a point cloud IMM class  """
 
 import numpy as np
 import torch
 from torch_utils import persistence
-from src.unets import *
-from src.dit import *
+from src.pc_models import pc_model
 
 
 @persistence.persistent_class
-class IMMPrecond(torch.nn.Module):
+class pc_IMMPrecond(torch.nn.Module):
     def __init__(
         self,
-        img_resolution,  # Image resolution. integer?
-        img_channels,  # Number of color channels.
+        num_points,  # Number of point cloud features
+        node_dimension,  ### number of node features
         label_dim=0,  # Number of class labels, 0 = unconditional.
         mixed_precision=None,
         noise_schedule="fm",
-        model_type="SongUNet",
-        sigma_data=0.5,
+        model_type="SongUNet",  ### TODO: switch!
+        sigma_data=0.5,  ### what is this?
         f_type="euler_fm",
         T=0.994,
         eps=0.0,
@@ -35,8 +26,8 @@ class IMMPrecond(torch.nn.Module):
     ):
         super().__init__()
 
-        self.img_resolution = img_resolution
-        self.img_channels = img_channels
+        self.num_points = num_points
+        self.node_dimension = node_dimension
 
         self.label_dim = label_dim
         self.use_mixed_precision = mixed_precision is not None
@@ -71,18 +62,15 @@ class IMMPrecond(torch.nn.Module):
             .item()
         )
 
-        self.model = globals()[model_type](
-            img_resolution=img_resolution,
-            img_channels=img_channels,
-            in_channels=img_channels,
-            out_channels=img_channels,
-            label_dim=label_dim,
+        self.model = pc_model(
+            num_points=self.num_points,
+            node_features=self.node_dimension,
             **model_kwargs,
         )
+
         print("# Mparams:", sum(p.numel() for p in self.model.parameters()) / 1000000)
 
         self.time_scale = time_scale
-
         self.temb_type = temb_type
 
         if self.f_type == "euler_fm":

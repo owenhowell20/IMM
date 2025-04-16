@@ -7,3 +7,5 @@ dependencies:
   - pytorch
   - torchvision
   - pandas
+pip:
+  -timm
