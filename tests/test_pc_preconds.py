@@ -1,15 +1,15 @@
 import pytest
 import torch
-from src.pc_preconds import IMMPrecond  # adjust import as needed
+from src.pc_preconds import pc_IMMPrecond
 from data import mock_data_pc
 
 
 @pytest.fixture
 def preconditioner():
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    model = IMMPrecond(
-        img_resolution=256,  # Image resolution.
-        img_channels=3,  # Number of color channels.
+    model = pc_IMMPrecond(
+        num_points=8,  # Image resolution.
+        node_dimension=4,  # Number of color channels.
         label_dim=0,  # Number of class labels, 0 = unconditional.
         mixed_precision=None,
         noise_schedule="fm",
@@ -21,11 +21,11 @@ def preconditioner():
         temb_type="identity",
         time_scale=1000.0,
     ).to(device)
+
     return model
 
 
 def test_pc_preconditioner_forward_step(preconditioner, mock_data_pc):
-
     # Dummy input point cloud
     x = mock_data_pc
     device = "cpu"

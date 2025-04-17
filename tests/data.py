@@ -6,7 +6,7 @@ import torch
 def mock_data_image():
     batch_size = 2
     channels = 3
-    height = width = 256
+    height = width = 16
     data = torch.randn(
         batch_size,
         channels,
@@ -21,8 +21,8 @@ def mock_data_image():
 
 @pytest.fixture
 def mock_data_pc():
-    batch_size = 32
-    num_points = 128
+    batch_size = 2
+    num_points = 8
     dimension = 4  ### point cloud feature dimension
     data = torch.randn(
         batch_size,

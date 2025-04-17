@@ -8,7 +8,7 @@ from data import mock_data_image
 def preconditioner():
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model = IMMPrecond(
-        img_resolution=256,  # Image resolution.
+        img_resolution=16,  # Image resolution.
         img_channels=3,  # Number of color channels.
         label_dim=0,  # Number of class labels, 0 = unconditional.
         mixed_precision=None,
@@ -25,7 +25,6 @@ def preconditioner():
 
 
 def test_image_preconditioner_forward_step(preconditioner, mock_data_image):
-
     # Dummy input image
     x = mock_data_image
     device = "cpu"
@@ -35,7 +34,7 @@ def test_image_preconditioner_forward_step(preconditioner, mock_data_image):
     s = torch.full((batch_size,), 0.8, device=device, dtype=torch.float32)
     t = torch.full((batch_size,), 0.6, device=device, dtype=torch.float32)
 
-    ### TODO: add assert that s<t or t<s, i.e. dt always be positive
+    ### TODO: add assert that s<t or t<s, i.e. dt > 0 always be positive
 
     ### get logsnr; should be batch size
     logsnr = preconditioner.get_logsnr(t)
@@ -53,8 +52,7 @@ def test_image_preconditioner_forward_step(preconditioner, mock_data_image):
     F = preconditioner.cfg_forward(
         x=x,
         t=t,
-        s=s,  ### TODO: check issue when s=None
+        s=s,  ### TODO: check issue when s=None, otherwise can just set s=0
     )
 
-    print(F.shape)
     assert F.shape == x.shape, "Dimension mismatch"

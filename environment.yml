@@ -9,3 +9,5 @@ dependencies:
   - pandas
 pip:
   -timm
+  -torch-geometric
+  -click

@@ -1,18 +1,17 @@
 import torch
+from torch_utils import persistence
+
 
 ### Global point cloud encoder
-
-
 @persistence.persistent_class
 class pc_model(torch.nn.Module):
     def __init__(
         self,
         num_points,  # number of points
         node_features,  # node features dimension
-        out_features,  # Number of color channels at output.
+        out_features=256,  # Number of color channels at output.
         **kwargs,
     ):
-
         # assert embedding_type in ["fourier", "positional"]
         # assert encoder_type in ["standard", "skip", "residual"]
         # assert decoder_type in ["standard", "skip"]
@@ -27,5 +26,4 @@ class pc_model(torch.nn.Module):
         class_labels=None,
         augment_labels=None,
     ):
-
         return x

@@ -15,7 +15,7 @@ class pc_IMMPrecond(torch.nn.Module):
         label_dim=0,  # Number of class labels, 0 = unconditional.
         mixed_precision=None,
         noise_schedule="fm",
-        model_type="SongUNet",  ### TODO: switch!
+        model_type="SongUNet",  ### TODO: switch to point cloud encoders!
         sigma_data=0.5,  ### what is this?
         f_type="euler_fm",
         T=0.994,
@@ -125,11 +125,11 @@ class pc_IMMPrecond(torch.nn.Module):
         alpha_t, sigma_t = self.get_alpha_sigma(t)
         alpha_s, sigma_s = self.get_alpha_sigma(s)
 
-        c_skip = (alpha_t * alpha_s + sigma_t * sigma_s) / (alpha_t ** 2 + sigma_t ** 2)
+        c_skip = (alpha_t * alpha_s + sigma_t * sigma_s) / (alpha_t**2 + sigma_t**2)
 
         c_out = (
             -(alpha_s * sigma_t - alpha_t * sigma_s)
-            * (alpha_t ** 2 + sigma_t ** 2).rsqrt()
+            * (alpha_t**2 + sigma_t**2).rsqrt()
             * self.sigma_data
         )
 
@@ -179,7 +179,7 @@ class pc_IMMPrecond(torch.nn.Module):
     ):
         alpha_t, sigma_t = self.get_alpha_sigma(t)
 
-        c_in = (alpha_t ** 2 + sigma_t ** 2).rsqrt() / self.sigma_data
+        c_in = (alpha_t**2 + sigma_t**2).rsqrt() / self.sigma_data
         if self.temb_type == "identity":
             c_noise_t = t * self.time_scale
             c_noise_s = s * self.time_scale
@@ -194,7 +194,6 @@ class pc_IMMPrecond(torch.nn.Module):
             enabled=self.use_mixed_precision and not force_fp32,
             dtype=self.mixed_precision,
         ):
-
             F_x = model(
                 (c_in * x),
                 c_noise_t.flatten(),

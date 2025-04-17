@@ -1,9 +1,9 @@
 from src.unets import SongUNet, DhariwalUNet
-from data import mock_data
+from data import mock_data_image
 
 
-def test_SongUNet(mock_data):
-    img_resolution = [256, 256]
+def test_SongUNet(mock_data_image):
+    img_resolution = 16
     in_channels = 3
     out_channels = 3
 
@@ -38,7 +38,7 @@ def test_SongUNet(mock_data):
         embedding_kwargs={},
     )
 
-    x = mock_data
+    x = mock_data_image
     noise_labels_t = (None,)
     noise_labels_s = (None,)
     class_labels = (None,)
@@ -52,4 +52,4 @@ def test_SongUNet(mock_data):
         augment_labels=augment_labels,
     )
 
-    assert True
+    assert output.shape == x.shape, "Output Size is incorrect"
