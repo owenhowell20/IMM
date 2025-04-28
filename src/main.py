@@ -66,34 +66,34 @@ def train_epoch(epoch, model, dataloader, optimizer, schedule, FLAGS):
     wandb.log({"Train Epoch Loss": average_loss.item()}, commit=False)
 
 
-# ### evaluate on test set
-# def evaluate_model(model, dataloader, FLAGS):
-#     model = model.to(FLAGS.device)
-#     if hasattr(model, "eval"):
-#         model.eval()
-#
-#     num_iter = len(dataloader)
-#
-#     losses = []
-#     for i, g in enumerate(dataloader):
-#
-#         key = g["key"].to(FLAGS.device)
-#         value = g["value"].to(FLAGS.device)
-#         question = g["question"].to(FLAGS.device)  ## (b, 3)
-#         ### form model input:
-#         result = torch.cat((key, value, question.unsqueeze(1)), dim=1)
-#         answer = g["answer"].to(FLAGS.device)  ### (b,3)
-#
-#         pred = model(result)
-#         loss = loss_function(pred, answer)
-#         losses.append(to_np(loss))
-#
-#         wandb.log({"Test Batch Loss": loss.item()}, commit=True)
-#
-#     average_loss = np.mean(np.array(losses))
-#     wandb.log({"Test Epoch Loss": average_loss.item()}, commit=True)
-#
-#     return True
+### evaluate on test set
+def evaluate_model(model, dataloader, FLAGS):
+    model = model.to(FLAGS.device)
+    if hasattr(model, "eval"):
+        model.eval()
+
+    num_iter = len(dataloader)
+
+    losses = []
+    for i, g in enumerate(dataloader):
+
+        key = g["key"].to(FLAGS.device)
+        value = g["value"].to(FLAGS.device)
+        question = g["question"].to(FLAGS.device)  ## (b, 3)
+        ### form model input:
+        result = torch.cat((key, value, question.unsqueeze(1)), dim=1)
+        answer = g["answer"].to(FLAGS.device)  ### (b,3)
+
+        pred = model(result)
+        loss = loss_function(pred, answer)
+        losses.append(to_np(loss))
+
+        wandb.log({"Test Batch Loss": loss.item()}, commit=True)
+
+    average_loss = np.mean(np.array(losses))
+    wandb.log({"Test Epoch Loss": average_loss.item()}, commit=True)
+
+    return True
 
 
 def main(FLAGS, UNPARSED_ARGV):
@@ -167,7 +167,7 @@ def main(FLAGS, UNPARSED_ARGV):
         model.parameters(), lr=FLAGS.lr, weight_decay=FLAGS.weight_decay
     )
     scheduler = optim.lr_scheduler.CosineAnnealingWarmRestarts(
-        optimizer, T_0=FLAGS.T_0, eta_min=0.1 * FLAGS.lr
+        optimizer, T_0=FLAGS.T_0, eta_min=FLAGS.eta_min
     )
     save_path = os.path.join(FLAGS.save_dir, FLAGS.name + ".pt")
 
@@ -177,20 +177,17 @@ def main(FLAGS, UNPARSED_ARGV):
 
         train_epoch(epoch, model, dataloader, optimizer, scheduler, FLAGS)
 
-        ### TODO: need to add the model eval
-        # evaluate_model(
-        #     model, dataloader=test_dataloader, FLAGS=FLAGS
-        # )
+        ## TODO: need to add the model eval
+        evaluate_model(model, dataloader=test_dataloader, FLAGS=FLAGS)
 
 
-### TODO: logging error, need to make sure record global step instead!!!
 if __name__ == "__main__":
     FLAGS, UNPARSED_ARGV = get_flags()
     os.makedirs(FLAGS.save_dir, exist_ok=True)
 
     for run in range(FLAGS.num_runs):
         wandb.init(
-            project="Equi-IMM",
+            project="IMM-run",
             name=f"{FLAGS.name}",
             config=vars(FLAGS),
             reinit=True,

@@ -7,48 +7,47 @@ def get_flags():
     parser = argparse.ArgumentParser()
 
     # Model parameters
+    parser.add_argument("--model", type=str, default="SongUNet", help="Base Model")
+
     parser.add_argument(
-        "--model", type=str, default="Hyena", help="String name of model"
+        "--dataset", type=str, default="ModelNet", help="Task to train on"
     )
 
-    parser.add_argument("--num_runs", type=int, default=1, help="Number of runs")
-    parser.add_argument("--sequence_length", type=int, default=4, help="Sequence Size")
+    ### batch and group size
+    parser.add_argument("--batch_size", type=int, default=4, help="Batch size")
     parser.add_argument(
-        "--num_sequences", type=int, default=8000, help="Number of Seqences"
+        "--num_groups",
+        type=int,
+        default=8,
+        help="Number of groups used in IMM sampling",
+    )
+
+    ### training parameters
+    parser.add_argument(
+        "--kernel", type=str, default="l2_kernel", help="Kernel type used in training"
     )
 
     # Meta-parameters
-    parser.add_argument("--batch_size", type=int, default=64, help="Batch size")
     parser.add_argument("--lr", type=float, default=1e-1, help="Learning rate")
     parser.add_argument("--num_epochs", type=int, default=500, help="Number of epochs")
+    parser.add_argument("--eta_min", type=float, default=0.1, help="Eta min")
     parser.add_argument(
-        "--grad_clip", type=bool, default=False, help="use gradent clipping"
+        "--grad_clip", type=bool, default=True, help="use gradent clipping"
     )
     parser.add_argument(
-        "--use_mask_tokens", type=bool, default=False, help="Random Mask on tokens"
+        "--T_0", type=int, default=500, help="Restart Period for Optimizer"
     )
     parser.add_argument(
         "--weight_decay", type=float, default=0.0, help="lr weight decay"
     )
 
-    # location of data for relational inference
-    ## TODO: dont need these?
-    parser.add_argument("--ri_data", type=str, default="data_generation")
-    parser.add_argument("--data_str", type=str, default="my_datasetfile")
-
     ### model args
     parser.add_argument(
-        "--positional_encoding_dimension",
-        type=int,
-        default="64",
-        help="dimension of positional encodings",
+        "--noise_schedule", type=str, default="fm", help="Noise Schedule"
     )
-    parser.add_argument("--input_dimension_1", type=int, default="128")
-    parser.add_argument("--input_dimension_2", type=int, default="64")
-    parser.add_argument("--input_dimension_3", type=int, default="32")
 
     # Logging
-    parser.add_argument("--name", type=str, default="big model test", help="Run name")
+    parser.add_argument("--name", type=str, default="IMM training", help="Run name")
     parser.add_argument(
         "--log_interval",
         type=int,
@@ -62,9 +61,12 @@ def get_flags():
         help="Number of steps between printing key stats",
     )
 
-    ### restart and model save
+    ### restarts and model save directory
     parser.add_argument(
-        "--save_dir", type=str, default="models", help="Directory name to save models"
+        "--model_save_dir",
+        type=str,
+        default="models",
+        help="Directory name to save models",
     )
     parser.add_argument(
         "--restore", type=str, default=None, help="Path to model to restore"
@@ -80,7 +82,7 @@ def get_flags():
     )
 
     # Random seed for both Numpy and Pytorch
-    parser.add_argument("--seed", type=int, default=1992)
+    parser.add_argument("--seed", type=int, default=1997)
 
     FLAGS, UNPARSED_ARGV = parser.parse_known_args()
 

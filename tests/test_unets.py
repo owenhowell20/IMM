@@ -1,4 +1,4 @@
-from src.unets import SongUNet, DhariwalUNet
+from src.models.unets import SongUNet, DhariwalUNet
 from data import mock_data_image
 
 

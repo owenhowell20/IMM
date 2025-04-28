@@ -1,6 +1,9 @@
 # Inductive Moment Matching
 
-This repository is an open-source implementation of the Inductive Moment Matching.
+This repository is an open-source implementation of the Inductive Moment Matching (IMM) paper. 
+We compare IMM with diffusion models, flow matching and consistancy models on some standard generative benchmarks.
+
+Models and utils were taken from Lummalabs.ai repo: https://github.com/lumalabs/imm
 
 
 The original Inducitve Moment Matching paper can be found here:
@@ -32,4 +35,8 @@ To check the installation, run:
 ```bash
 python3 -m pytest tests
 ```
+
+
+To compare with flow matching and diffusion models
+
 

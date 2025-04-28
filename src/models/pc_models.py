@@ -10,11 +10,14 @@ class pc_model(torch.nn.Module):
         num_points,  # number of points
         node_features,  # node features dimension
         out_features=256,  # Number of color channels at output.
+        embedding_type="fourier",
+        encoder_type="standard",
+        decoder_type="standard",
         **kwargs,
     ):
-        # assert embedding_type in ["fourier", "positional"]
-        # assert encoder_type in ["standard", "skip", "residual"]
-        # assert decoder_type in ["standard", "skip"]
+        assert embedding_type in ["fourier", "positional"]
+        assert encoder_type in ["standard", "skip", "residual"]
+        assert decoder_type in ["standard", "skip"]
 
         super().__init__()
 

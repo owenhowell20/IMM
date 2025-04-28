@@ -11,3 +11,5 @@ pip:
   -timm
   -torch-geometric
   -click
+  -torchvision 
+  -torch_cfm

@@ -11,8 +11,8 @@
 import numpy as np
 import torch
 from torch_utils import persistence
-from src.unets import *
-from src.dit import *
+from src.models.unets import *
+from src.models.dit import *
 
 
 @persistence.persistent_class

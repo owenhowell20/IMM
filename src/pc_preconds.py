@@ -3,7 +3,7 @@
 import numpy as np
 import torch
 from torch_utils import persistence
-from src.pc_models import pc_model
+from src.models.pc_models import pc_model
 
 
 @persistence.persistent_class
@@ -68,8 +68,6 @@ class pc_IMMPrecond(torch.nn.Module):
             **model_kwargs,
         )
 
-        print("# Mparams:", sum(p.numel() for p in self.model.parameters()) / 1000000)
-
         self.time_scale = time_scale
         self.temb_type = temb_type
 
@@ -90,7 +88,6 @@ class pc_IMMPrecond(torch.nn.Module):
 
     def get_log_nt(self, t):
         logsnr_t = self.get_logsnr(t)
-
         return -0.5 * logsnr_t
 
     def get_alpha_sigma(self, t):
@@ -100,7 +97,6 @@ class pc_IMMPrecond(torch.nn.Module):
         elif self.noise_schedule == "vp_cosine":
             alpha_t = torch.cos(t * torch.pi * 0.5)
             sigma_t = torch.sin(t * torch.pi * 0.5)
-
         return alpha_t, sigma_t
 
     def add_noise(self, y, t, noise=None):
@@ -188,7 +184,6 @@ class pc_IMMPrecond(torch.nn.Module):
             c_noise_t = t * self.time_scale
             c_noise_s = (t - s) * self.time_scale
 
-        print("pass noise")
         with torch.amp.autocast(
             "cuda",
             enabled=self.use_mixed_precision and not force_fp32,
